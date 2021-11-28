@@ -1,0 +1,117 @@
+.modal-background {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(200, 200, 200, 0.511);
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99;
+    margin: 0;
+    top: 0;
+    left: 0;
+}
+
+.modal-container {
+    width: auto;
+    height: auto;
+    border-radius: 12px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    max-height: 700px;
+    overflow: scroll;
+}
+
+.modal {
+    display: inline-block;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.titleCloseBtn {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.titleCloseBtn button {
+    background-color: transparent;
+    border: none;
+    font-size: 25px;
+    cursor: pointer;
+    height: 24px !important;
+    height: 24px !important;
+}
+
+.modal-title {
+    display: inline-block;
+    text-align: center;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.modalbody {
+    flex: 50%;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.7rem;
+    text-align: center;
+}
+.modalparagraph {
+    font-size: 1rem;
+    color: #7c7c7c;
+    margin: 10px auto 32px auto;
+    font-weight: 400;
+}
+
+.modalContainer .footer {
+    flex: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalContainer .footer button {
+    width: 150px;
+    height: 45px;
+    margin: 10px;
+    border: none;
+    background-color: cornflowerblue;
+    color: white;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+}
+.con-btn {
+    appearance: auto;
+    -webkit-writing-mode: horizontal-tb !important;
+    text-rendering: auto;
+    color: -internal-light-dark(black, white);
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none !important;
+    display: inline-block;
+    text-align: center;
+    align-items: flex-start;
+    cursor: default;
+    background-color: -internal-light-dark(rgb(239, 239, 239), rgb(59, 59, 59));
+    box-sizing: border-box;
+    margin: 0em;
+    font: 400 13.3333px !important;
+    border-width: 2px !important;
+    border-style: outset !important;
+    border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
+    border-image: initial !important;
+    background: none;
+    border: 2px solid #1d1d1d;
+    border-radius: 5px;
+    margin-bottom: 30px;
+    padding: 16px 24px;
+}

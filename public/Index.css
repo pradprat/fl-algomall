@@ -1,0 +1,776 @@
+* {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+h1,
+h2 {
+    font-weight: 400;
+}
+
+body {
+    font-family: 'Lato', 'sans-serif';
+}
+
+header {
+    padding: 3% 10%;
+    height: 100vh;
+}
+
+.logo img {
+    height: 45px;
+}
+
+nav,
+nav ul {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+nav li {
+    list-style: none;
+    margin-left: 30px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #1d1d1d;
+    font-weight: 700;
+}
+
+.sec_btn {
+    background: none;
+    border: 2px solid #1d1d1d;
+    border-radius: 5px;
+    margin-left: 30px;
+    padding: 16px 24px;
+}
+
+.hero {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    margin-top: 10%;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.hero_text {
+    font-size: 1.5em;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.hero_text h1 {
+    font-weight: 900;
+}
+
+.hero_text h4 {
+    color: #7c7c7c;
+    margin: 10px auto 32px auto;
+    font-weight: 400;
+}
+
+.hero_full {
+    float: right;
+    position: relative;
+    top: -70px;
+}
+
+.hero_mobile {
+    display: none
+}
+
+.btn {
+    background-color: #1d1d1d;
+    border-radius: 5px;
+    border: none;
+    padding: 16px 24px;
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+
+/* =COLLECTION=================================== */
+
+.section_collections {
+    padding: 5% 10%;
+    margin: 5% auto;
+}
+
+.section_collections h2::after {
+    background: #dc5c5c;
+    display: block;
+    content: " ";
+    width: 100px;
+    height: 3px;
+    margin: 10px 0 20px 0;
+}
+
+.carousel {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    width: 100%;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.carousel-cell {
+    width: 23%;
+    border-radius: 5px;
+    -webkit-box-shadow: 3px 5px 16px 1px #ebebeb;
+    box-shadow: 3px 5px 16px 1px #ebebeb;
+}
+
+.carousel-cell img {
+    width: 100%;
+    border-radius: 5px 5px 0 0;
+}
+
+.card_info {
+    padding: 10px 20px;
+}
+
+.carousel h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #dc5c5c;
+}
+
+.carousel h3 {
+    color: #7c7c7c;
+    padding-bottom: 10px;
+    font-weight: 400;
+    font-size: 1rem
+}
+
+.price {
+    color: #1d1d1d;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.price p {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.price span {
+    padding-left: 4px;
+}
+
+.price svg,
+.price img {
+    width: 20px;
+    height: 20px;
+}
+
+
+
+/* =ROADMAP======================================== */
+
+.section_roadmap {
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+#particles-js {
+    width: 100%;
+    height: 100%;
+    background: #111111;
+    top: 2px;
+    position: absolute;
+}
+
+#particles-js canvas {
+    top: 10px;
+    z-index: -100000;
+}
+
+.roadmap {
+    color: #fff;
+    text-align: center;
+    padding: 5% 0 2% 0;
+}
+
+.roadmap h1::after,
+.section_tokenomics h1::after {
+    background: #dc5c5c;
+    display: block;
+    content: " ";
+    width: 100px;
+    height: 3px;
+    margin: 10px auto 20px auto;
+}
+
+.roadmap h2 {
+    font-size: 1rem;
+    font-weight: 300;
+}
+
+.rb-container {
+    width: 70%;
+    margin: auto;
+    display: block;
+    position: relative;
+}
+
+.rb-container ul.rb {
+    margin: 2.5em 0;
+    padding: 0;
+    display: inline-block;
+}
+
+.rb-container ul.rb li {
+    list-style: none;
+    margin: auto;
+    margin-left: 10em;
+    min-height: 50px;
+    border-left: 2px solid #fff;
+    padding: 0 0 80px 30px;
+    position: relative;
+}
+
+.rb-container ul.rb li:last-child {
+    border-left: 0;
+}
+
+.rb-container ul.rb li::before {
+    position: absolute;
+    left: -18px;
+    top: -5px;
+    content: " ";
+    border: 8px solid rgba(255, 255, 255, 1);
+    border-radius: 500%;
+    background: #dc5c5c;
+    height: 20px;
+    width: 20px;
+}
+
+
+ul.rb li .timestamp {
+    color: #dc5c5c;
+    position: relative;
+    width: 100px;
+    font-size: 1.2rem;
+}
+
+.item-title {
+    color: #ebebeb;
+    font-weight: 700;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.item {
+    color: #fff;
+    font-size: 1.1rem;
+    line-height: 200%
+}
+
+
+/* =TOKENOMICS============================== */
+
+
+.section_tokenomics {
+    padding: 10% 15%;
+    font-weight: 300;
+    background-color: #EEC1C0;
+}
+
+.section_tokenomics h1 {
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.pie_div {
+    width: 80%;
+    font-size: 1.1rem;
+    margin: auto;
+}
+
+.pie_div canvas {
+    position: relative;
+    top: -100px;
+}
+
+
+.lb-container {
+    width: 100%;
+    margin: auto;
+}
+
+.timeline {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.timeline li {
+    margin-top: 50px;
+    margin-bottom: 80px;
+    width: 23%;
+    list-style: none;
+    padding-top: 50px;
+    position: relative;
+    font-size: 1.3rem;
+}
+
+.timeline p {
+    margin-left: 10px;
+}
+
+.timeline svg {
+    position: absolute;
+    top: 0px;
+    height: 36px;
+}
+
+.token_text h4 {
+    font-size: 1.3rem;
+    font-weight: 300;
+    text-align: center;
+}
+
+.token_text span {
+    font-weight: 400
+}
+
+
+.timeline li::after {
+    content: "";
+    position: absolute;
+    width: 60%;
+    height: 1px;
+    background-color: #dc5c5c;
+    top: 20px;
+    left: 30%;
+    -webkit-transition: all ease-in-out .3s;
+    transition: all ease-in-out .3s;
+}
+
+
+/* =FOOTER================================= */
+
+footer {
+    background-color: #1d1d1d;
+    padding: 5% 15%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+footer h1 {
+    font-size: 1.2rem;
+    color: #ebebeb;
+    font-weight: 300;
+}
+
+.socials {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.socials svg {
+    width: 100%;
+    fill: #ebebeb;
+    height: 48px;
+    margin-right: 48px;
+}
+
+.socials a {
+    width: 25%;
+}
+
+
+
+/* MEDIA QUERIES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */
+
+
+@media(max-width: 1024px) {
+    .hero_full {
+        width: 80%;
+    }
+}
+
+
+@media(max-width: 890px) {
+
+    .hero_full,
+    nav ul {
+        display: none;
+    }
+
+    .carousel,
+    .timeline,
+    .hero {
+        display: block;
+        width: auto;
+    }
+
+    .carousel-cell {
+        width: 100%;
+        margin-bottom: 48px;
+    }
+
+    .timeline li {
+        width: 100%
+    }
+
+    .rb-container ul.rb li {
+        margin: 0;
+    }
+
+    .token_text h4 {
+        text-align: left
+    }
+
+    .timeline li::after {
+        left: 18%
+    }
+
+    nav li,
+    .sec_btn {
+        margin-left: 0
+    }
+
+
+    .hero_mobile {
+        display: block;
+        top: 0px;
+        right: 0;
+        height: 100vh;
+        z-index: -10;
+        position: absolute;
+        opacity: 20%;
+        filter: blur(2px);
+        -webkit-filter: blur(2px);
+    }
+
+    .hero_text {
+        -webkit-transform: translate(0%, -50%);
+        transform: translate(0%, -50%);
+        top: 50%;
+        position: absolute;
+    }
+
+}
+
+@media(min-width: 890px) {
+    .menu {
+        display: none
+    }
+
+    ;
+}
+
+@media(max-width: 730px) {
+    .pie_div canvas {
+        position: static;
+    }
+}
+
+
+@media(max-width: 571px) {
+    .hero_text h4 {
+        color: #1d1d1d
+    }
+
+    footer h1 {
+        font-size: 0.7rem;
+    }
+
+    .socials {
+        width: 40%
+    }
+
+    .socials svg,
+    .socials a {
+        height: 24px;
+        width: 24px
+    }
+
+    .socials img {
+        width: 100%
+    }
+
+    .section_tokenomics {
+        padding: 15% 5%;
+    }
+
+}
+
+
+@media(max-width: 415px) {
+
+    header,
+    .section_collections {
+        padding: 5%;
+    }
+
+    footer {
+        padding: 10% 5%
+    }
+
+    .rb-container {
+        width: 80%;
+        padding: 10% 0
+    }
+
+    .section_tokenomics h1,
+    .section_collections h2,
+    .roadmap h1 {
+        font-size: 1.2rem
+    }
+}
+
+
+
+
+/* ==================================================
+MOBILE_NAV
+================================================== */
+
+
+.mobile-nav {
+    position: absolute;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    text-align: right;
+    z-index: 350;
+    padding: 40px;
+    right: 0px;
+    top: 68px;
+    font-size: 16px;
+    background: #fafafa;
+    width: 100vw;
+    height: 400px;
+}
+
+.mobile-navbar {
+    background: #fff;
+    -webkit-box-shadow: -5px 1px 15px -9px rgba(0, 0, 0, 0.8);
+    box-shadow: -5px 1px 15px -9px rgba(0, 0, 0, 0.8);
+    position: fixed;
+    width: 100%;
+    height: 68px;
+    top: 0;
+    left: 0;
+    z-index: 400;
+    padding: 2% 10%;
+}
+
+
+
+/* ============================================
+HAMBURGER
+============================================ */
+
+
+
+.sticky .hamburger-inner,
+.sticky .hamburger-inner::before,
+.sticky .hamburger-inner::after {
+    background-color: #333;
+}
+
+.hamburger {
+    position: absolute;
+    z-index: 351;
+    right: 30px;
+    top: 25px;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-transition-property: opacity, -webkit-filter;
+    transition-property: opacity, -webkit-filter;
+    transition-property: opacity, filter;
+    transition-property: opacity, filter, -webkit-filter;
+    -webkit-transition-duration: 0.15s;
+    transition-duration: 0.15s;
+    -webkit-transition-timing-function: linear;
+    transition-timing-function: linear;
+    font: inherit;
+    color: inherit;
+    text-transform: none;
+    background-color: transparent;
+    border: 0;
+    margin: 0;
+    overflow: visible;
+}
+
+.hamburger.is-active .hamburger-inner,
+.hamburger.is-active .hamburger-inner::before,
+.hamburger.is-active .hamburger-inner::after {
+    background-color: #8a8a8a;
+}
+
+.hamburger-box {
+    width: 30px;
+    height: 24px;
+    display: inline-block;
+    position: relative;
+}
+
+.hamburger-inner {
+    display: block;
+    top: 50%;
+    margin-top: -2px;
+}
+
+.hamburger-inner,
+.hamburger-inner::before,
+.hamburger-inner::after {
+    width: 30px;
+    height: 4px;
+    border-radius: 4px;
+    position: absolute;
+    -webkit-transition-property: -webkit-transform;
+    transition-property: -webkit-transform;
+    transition-property: transform;
+    transition-property: transform, -webkit-transform;
+    background-color: #1d1d1d;
+    -webkit-transition-duration: 0.15s;
+    transition-duration: 0.15s;
+    -webkit-transition-timing-function: ease;
+    transition-timing-function: ease;
+}
+
+.hamburger-inner::before,
+.hamburger-inner::after {
+    content: "";
+    display: block;
+}
+
+.hamburger-inner::before {
+    top: -10px;
+}
+
+.hamburger-inner::after {
+    bottom: -10px;
+}
+
+
+
+
+.hamburger--spin .hamburger-inner {
+    -webkit-transition-duration: 0.22s;
+    transition-duration: 0.22s;
+    -webkit-transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+.hamburger--spin .hamburger-inner::before {
+    -webkit-transition: top 0.1s 0.25s ease-in, opacity 0.1s ease-in;
+    transition: top 0.1s 0.25s ease-in, opacity 0.1s ease-in;
+}
+
+.hamburger--spin .hamburger-inner::after {
+    -webkit-transition: bottom 0.1s 0.25s ease-in, -webkit-transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    transition: bottom 0.1s 0.25s ease-in, -webkit-transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    transition: bottom 0.1s 0.25s ease-in, transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    transition: bottom 0.1s 0.25s ease-in, transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19), -webkit-transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+.hamburger--spin.is-active .hamburger-inner {
+    -webkit-transform: rotate(225deg);
+    transform: rotate(225deg);
+    -webkit-transition-delay: 0.12s;
+    transition-delay: 0.12s;
+    -webkit-transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.hamburger--spin.is-active .hamburger-inner::before {
+    top: 0;
+    opacity: 0;
+    -webkit-transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out;
+    transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out;
+}
+
+.hamburger--spin.is-active .hamburger-inner::after {
+    bottom: 0;
+    -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    -webkit-transition: bottom 0.1s ease-out, -webkit-transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition: bottom 0.1s ease-out, -webkit-transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition: bottom 0.1s ease-out, transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition: bottom 0.1s ease-out, transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1), -webkit-transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+
+.hamburger--spin-r .hamburger-inner {
+    -webkit-transition-duration: 0.22s;
+}
+
+transition-duration: 0.22s;
+-webkit-transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+.hamburger--spin-r .hamburger-inner::before {
+    -webkit-transition: top 0.1s 0.25s ease-in, opacity 0.1s ease-in;
+    transition: top 0.1s 0.25s ease-in, opacity 0.1s ease-in;
+}
+
+.hamburger--spin-r .hamburger-inner::after {
+    -webkit-transition: bottom 0.1s 0.25s ease-in, -webkit-transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    transition: bottom 0.1s 0.25s ease-in, -webkit-transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    transition: bottom 0.1s 0.25s ease-in, transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    transition: bottom 0.1s 0.25s ease-in, transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19), -webkit-transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+.hamburger--spin-r.is-active .hamburger-inner {
+    -webkit-transform: rotate(-225deg);
+    transform: rotate(-225deg);
+    -webkit-transition-delay: 0.12s;
+    transition-delay: 0.12s;
+    -webkit-transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.hamburger--spin-r.is-active .hamburger-inner::before {
+    top: 0;
+    opacity: 0;
+    -webkit-transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out;
+    transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out;
+}
+
+.hamburger--spin-r.is-active .hamburger-inner::after {
+    bottom: 0;
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+    -webkit-transition: bottom 0.1s ease-out, -webkit-transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition: bottom 0.1s ease-out, -webkit-transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition: bottom 0.1s ease-out, transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition: bottom 0.1s ease-out, transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1), -webkit-transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
