@@ -92,6 +92,9 @@ function App() {
 
     useEffect(() => {
         walletConnectInit();
+        if (connected) {
+            setOpenModal(false);
+        }
         return () => {};
     }, [connected]);
 
@@ -198,9 +201,7 @@ function App() {
                             {openModal && (
                                 <Modal
                                     onConnect={address => {
-                                        console.log(address);
-                                        // walletConnectInit();
-                                        setaddress(address);
+                                        setconnected(!connected);
                                     }}
                                     closeModal={setOpenModal}
                                 />

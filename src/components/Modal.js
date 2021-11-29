@@ -34,7 +34,7 @@ function Modal({ closeModal, onConnect }) {
         setconnector(connector);
         setconnected(connector.connected);
         if (connector.connected) {
-            console.log(connector.accounts[0]);
+            onConnect(connector);
             setaddress(connector.accounts[0]);
             apiGetAccountAssets(chain, connector.accounts[0]).then(data => {
                 setbalance(
@@ -105,7 +105,6 @@ function Modal({ closeModal, onConnect }) {
 
     useEffect(() => {
         walletConnectInit();
-        onConnect(connector);
         return () => {};
     }, [connected]);
 
@@ -172,39 +171,6 @@ function Modal({ closeModal, onConnect }) {
                                 Use WalletConnect
                             </button>
                             <br />
-                            <img src={algosignimg} alt='walletconnect_icon' style={modalIcon} />
-                            <br />
-                            <button
-                                className='con-btn'
-                                onClick={() => {
-                                    if (typeof AlgoSigner !== 'undefined') {
-                                        AlgoSigner.connect({
-                                            ledger: 'TestNet',
-                                        });
-                                        AlgoSigner.accounts({
-                                            ledger: 'TestNet',
-                                        }).then(acc => {
-                                            setaddress(acc[0].address);
-                                            onConnect(acc[0].address);
-                                            apiGetAccountAssets(chain, acc[0].address).then(
-                                                data => {
-                                                    setbalance(
-                                                        (
-                                                            Number(data[0].amount) /
-                                                            Math.pow(10, data[0].decimals)
-                                                        ).toLocaleString(),
-                                                    );
-                                                },
-                                            );
-                                        });
-                                        console.log('AlgoSigner is installed.');
-                                    } else {
-                                        console.log('AlgoSigner is NOT installed.');
-                                    }
-                                }}
-                            >
-                                Use Algosigner
-                            </button>
                         </div>
                     </>
                 )}
