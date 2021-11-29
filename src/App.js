@@ -1,5 +1,5 @@
 import logo from './assets/logo.jpg';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import hero from './assets/hero.png';
 import hero_geo from './assets/hero_geo3.png';
 import gold_opt from './assets/gold-opt.jpg';
@@ -20,16 +20,108 @@ import litepaper from './assets/litepaper.pdf';
 import Modal from './components/Modal';
 import './App.css';
 import './index.css';
+import WalletConnect from '@walletconnect/client';
+import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
+import { apiGetAccountAssets } from './helpers/api';
+import algosdk from 'algosdk';
+import { formatJsonRpcRequest } from '@json-rpc-tools/utils';
+import { scenarios, signTxnWithTestAccount } from './helpers/scenarios';
 
 const footerIcon = {
     width: '30px',
     height: '30px',
     marginRight: '20px',
 };
+const chain = 'testnet';
 
 function App() {
     const [openModal, setOpenModal] = useState(false);
     const [openMenu, setopenMenu] = useState(false);
+    const [connected, setconnected] = useState(false);
+    const [connector, setconnector] = useState(null);
+    const [address, setaddress] = useState(null);
+    const [balance, setbalance] = useState(null);
+    const [pendingRequest, setpendingRequest] = useState(false);
+    const [result, setresult] = useState(null);
+
+    const walletConnectInit = () => {
+        const bridge = 'https://bridge.walletconnect.org';
+        const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal });
+        setconnector(connector);
+        setconnected(connector.connected);
+        if (connector.connected) {
+            setaddress(connector.accounts[0]);
+            apiGetAccountAssets(chain, connector.accounts[0]).then(data => {
+                setbalance(
+                    (Number(data[0].amount) / Math.pow(10, data[0].decimals)).toLocaleString(),
+                );
+            });
+        } else {
+            setaddress(null);
+        }
+        subscribeToEvents();
+    };
+    const subscribeToEvents = () => {
+        if (!connector) {
+            return;
+        }
+        connector.on('session_update', (error, payload) => {
+            if (error) {
+                throw error;
+            }
+            const { accounts } = payload.params[0];
+        });
+
+        connector.on('connect', (error, payload) => {
+            setconnected(true);
+            // walletConnectInit();
+            const { accounts } = payload.params[0];
+            if (error) {
+                throw error;
+            }
+        });
+
+        connector.on('disconnect', (error, payload) => {
+            setconnected(false);
+            // walletConnectInit();
+            if (error) {
+                throw error;
+            }
+        });
+    };
+
+    useEffect(() => {
+        walletConnectInit();
+        return () => {};
+    }, [connected]);
+
+    const signTxnScenario = scenario => {
+        if (!connector) {
+            return;
+        }
+        try {
+            const txnsToSign = scenario(chain, address);
+            txnsToSign.then(data => {
+                console.log(data);
+                const flatTxns = data.reduce((acc, val) => acc.concat(val), []);
+                const walletTxns = flatTxns.map(({ txn, signers, authAddr, message }) => ({
+                    txn: Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString('base64'),
+                    signers, // TODO: put auth addr in signers array
+                    authAddr,
+                    message,
+                }));
+                // sign transaction
+                const requestParams = [walletTxns];
+                const request = formatJsonRpcRequest('algo_signTxn', requestParams);
+                let sendRequest = connector.sendCustomRequest(request);
+                sendRequest
+                    .then(result => {
+                        console.log(result);
+                    })
+                    .catch(error => {});
+            });
+        } catch (error) {}
+    };
 
     return (
         <div>
@@ -57,17 +149,62 @@ function App() {
                                 </a>
                             </li>
                             <li>
-                                <button
-                                    className='sec_btn'
-                                    onClick={() => {
-                                        setOpenModal(true);
-                                    }}
-                                >
-                                    Connect Wallet
-                                </button>
+                                {connected && (
+                                    <>
+                                        <p
+                                            style={{
+                                                width: 200,
+                                                textOverflow: 'ellipsis',
+                                                overflow: 'hidden',
+                                            }}
+                                        >
+                                            {address}
+                                        </p>
+                                        <p
+                                            style={{
+                                                width: 200,
+                                                textOverflow: 'ellipsis',
+                                                overflow: 'hidden',
+                                            }}
+                                        >
+                                            {balance} Algo
+                                        </p>
+                                        <a
+                                            onClick={() => {
+                                                if (connector) {
+                                                    if (connected) {
+                                                        connector.killSession();
+                                                        setconnected(false);
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            Disconnect
+                                        </a>
+                                    </>
+                                )}
+                                {!connected && (
+                                    <button
+                                        className='sec_btn'
+                                        onClick={() => {
+                                            setOpenModal(true);
+                                        }}
+                                    >
+                                        Connect Wallet
+                                    </button>
+                                )}
                             </li>
 
-                            {openModal && <Modal closeModal={setOpenModal} />}
+                            {openModal && (
+                                <Modal
+                                    onConnect={address => {
+                                        console.log(address);
+                                        // walletConnectInit();
+                                        setaddress(address);
+                                    }}
+                                    closeModal={setOpenModal}
+                                />
+                            )}
                         </ul>
                     </div>
 
@@ -98,6 +235,21 @@ function App() {
                         <button className='btn' id='collection'>
                             Explore Collections
                         </button>
+                        <br />
+                        <br />
+                        {address &&
+                            scenarios.map(({ name, scenario }) => {
+                                return (
+                                    <button
+                                        className='btn'
+                                        onClick={() => {
+                                            signTxnScenario(scenario);
+                                        }}
+                                    >
+                                        {name}
+                                    </button>
+                                );
+                            })}
                     </div>
 
                     <div className='hero_img'>

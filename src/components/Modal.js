@@ -20,7 +20,7 @@ const modalIcon = {
 
 const chain = 'testnet';
 
-function Modal({ closeModal }) {
+function Modal({ closeModal, onConnect }) {
     const [connected, setconnected] = useState(false);
     const [connector, setconnector] = useState(null);
     const [address, setaddress] = useState(null);
@@ -34,9 +34,12 @@ function Modal({ closeModal }) {
         setconnector(connector);
         setconnected(connector.connected);
         if (connector.connected) {
+            console.log(connector.accounts[0]);
             setaddress(connector.accounts[0]);
             apiGetAccountAssets(chain, connector.accounts[0]).then(data => {
-                setbalance(Number(data[0].amount).toFixed(data[0].decimals));
+                setbalance(
+                    (Number(data[0].amount) / Math.pow(10, data[0].decimals)).toLocaleString(),
+                );
             });
         } else {
         }
@@ -71,6 +74,7 @@ function Modal({ closeModal }) {
             }
         });
     };
+
     const signTxnScenario = scenario => {
         if (!connector) {
             return;
@@ -78,6 +82,7 @@ function Modal({ closeModal }) {
         try {
             const txnsToSign = scenario(chain, address);
             txnsToSign.then(data => {
+                console.log(data);
                 const flatTxns = data.reduce((acc, val) => acc.concat(val), []);
                 const walletTxns = flatTxns.map(({ txn, signers, authAddr, message }) => ({
                     txn: Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString('base64'),
@@ -100,6 +105,7 @@ function Modal({ closeModal }) {
 
     useEffect(() => {
         walletConnectInit();
+        onConnect(connector);
         return () => {};
     }, [connected]);
 
@@ -109,7 +115,7 @@ function Modal({ closeModal }) {
                 <div className='titleCloseBtn'>
                     <button onClick={() => closeModal(false)}>X</button>
                 </div>
-                {connected && (
+                {address && (
                     <>
                         <h1>Balance</h1>
                         <h1>{balance} Algo</h1>
@@ -120,7 +126,7 @@ function Modal({ closeModal }) {
                                 if (connector) {
                                     if (connected) {
                                         connector.killSession();
-                                        setconnected(!connected);
+                                        setaddress(null);
                                     }
                                 }
                             }}
@@ -141,7 +147,7 @@ function Modal({ closeModal }) {
                         })}
                     </>
                 )}
-                {!connected && (
+                {!address && (
                     <>
                         <div className='modal-title'>
                             <h1 className='modaltitle'>Connect Your Wallet To Algomall</h1>
@@ -155,7 +161,6 @@ function Modal({ closeModal }) {
                             <button
                                 className='con-btn'
                                 onClick={() => {
-                                    // walletConnectInit();
                                     if (connector) {
                                         if (!connected) {
                                             connector.createSession();
@@ -173,23 +178,22 @@ function Modal({ closeModal }) {
                                 className='con-btn'
                                 onClick={() => {
                                     if (typeof AlgoSigner !== 'undefined') {
-                                        console.log(AlgoSigner);
                                         AlgoSigner.connect({
                                             ledger: 'TestNet',
                                         });
-
                                         AlgoSigner.accounts({
                                             ledger: 'TestNet',
                                         }).then(acc => {
-                                            console.log(acc);
+                                            setaddress(acc[0].address);
+                                            onConnect(acc[0].address);
                                             apiGetAccountAssets(chain, acc[0].address).then(
                                                 data => {
-                                                    console.log(data);
-                                                    // setbalance(
-                                                    //     Number(data[0].amount).toFixed(
-                                                    //         data[0].decimals,
-                                                    //     ),
-                                                    // );
+                                                    setbalance(
+                                                        (
+                                                            Number(data[0].amount) /
+                                                            Math.pow(10, data[0].decimals)
+                                                        ).toLocaleString(),
+                                                    );
                                                 },
                                             );
                                         });
