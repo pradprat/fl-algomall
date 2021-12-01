@@ -1,5 +1,5 @@
 import logo from './assets/logo.jpg';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import hero from './assets/hero.png';
 import hero_geo from './assets/hero_geo3.png';
 import gold_opt from './assets/gold-opt.jpg';
@@ -18,6 +18,7 @@ import youtube_img from './assets/image13.svg';
 import telegram_img from './assets/iconmonstr-telegram-1-48.png';
 import litepaper from './assets/litepaper.pdf';
 import Modal from './components/Modal';
+import CloseIcon from '@mui/icons-material/Close';
 import './App.css';
 import './index.css';
 import WalletConnect from '@walletconnect/client';
@@ -27,6 +28,8 @@ import algosdk from 'algosdk';
 import { formatJsonRpcRequest } from '@json-rpc-tools/utils';
 import { scenarios, signTxnWithTestAccount } from './helpers/scenarios';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
+import whitelist from './assets/whitelist.json';
+import { IconButton, Snackbar, SnackbarContent } from '@mui/material';
 // import SendRawTransaction from 'algosdk/dist/types/src/client/v2/algod/sendRawTransaction';
 const footerIcon = {
     width: '30px',
@@ -44,6 +47,10 @@ function App() {
     const [balance, setbalance] = useState(null);
     const [pendingRequest, setpendingRequest] = useState(false);
     const [result, setresult] = useState(null);
+    const [snackbarProp, setsnackbarProp] = useState({
+        open: false,
+        message: '',
+    });
 
     const myAlgoWallet = new MyAlgoConnect();
 
@@ -93,6 +100,12 @@ function App() {
             }
         });
     };
+    const openSnackbar = message => {
+        setsnackbarProp({
+            open: true,
+            message: message,
+        });
+    };
 
     useEffect(() => {
         walletConnectInit();
@@ -103,84 +116,69 @@ function App() {
     }, [connected]);
 
     const signTxnScenario = scenario => {
-        if (!connector) {
-            return;
+        // if (!connector) {
+        //     return;
+        // }
+        if (whitelist.includes(address)) {
+            try {
+                const txnsToSign = scenario(chain, address);
+                txnsToSign.then(txn => {
+                    console.log(txn);
+                    switch (walletType) {
+                        case 'walletconnect':
+                            const txns = [txn];
+                            const txnsToSign = txns.map(txn => {
+                                const encodedTxn = Buffer.from(
+                                    algosdk.encodeUnsignedTransaction(txn),
+                                ).toString('base64');
+
+                                return {
+                                    txn: encodedTxn,
+                                    message: 'Description of transaction being signed',
+                                };
+                            });
+
+                            const requestParams = [txnsToSign];
+
+                            const request = formatJsonRpcRequest('algo_signTxn', requestParams);
+
+                            openSnackbar('Open your wallet app');
+
+                            connector.sendCustomRequest(request).then(data => {
+                                const decodedResult = data.map(element => {
+                                    return element
+                                        ? new Uint8Array(Buffer.from(element, 'base64'))
+                                        : null;
+                                });
+                                openSnackbar('Processing Transaction...');
+                                apiSubmitTransactions(chain, decodedResult).then(data => {
+                                    console.log(data);
+                                    updateBalance();
+                                    openSnackbar('Transaction Success');
+                                });
+                                console.log(decodedResult);
+                            });
+                            break;
+                        case 'myalgo':
+                            openSnackbar('Open your wallet app');
+                            myAlgoWallet.signTransaction(txn.toByte()).then(data => {
+                                console.log(data);
+                                openSnackbar('Processing Transaction...');
+                                apiSubmitTransactions(chain, data.blob).then(data => {
+                                    console.log(data);
+                                    updateBalance();
+                                    openSnackbar('Transaction Success');
+                                });
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            } catch (error) {}
+        } else {
+            openSnackbar('the address is not whitelisted');
         }
-        try {
-            const txnsToSign = scenario(chain, address);
-            txnsToSign.then(txn => {
-                console.log(txn);
-                switch (walletType) {
-                    case 'walletconnect':
-                        const txns = [txn];
-                        const txnsToSign = txns.map(txn => {
-                            const encodedTxn = Buffer.from(
-                                algosdk.encodeUnsignedTransaction(txn),
-                            ).toString('base64');
-
-                            return {
-                                txn: encodedTxn,
-                                message: 'Description of transaction being signed',
-                            };
-                        });
-
-                        const requestParams = [txnsToSign];
-
-                        const request = formatJsonRpcRequest('algo_signTxn', requestParams);
-                        const result = connector.sendCustomRequest(request).then(data => {
-                            const decodedResult = data.map(element => {
-                                return element
-                                    ? new Uint8Array(Buffer.from(element, 'base64'))
-                                    : null;
-                            });
-                            apiSubmitTransactions(chain, decodedResult).then(data => {
-                                console.log(data);
-                            });
-                            console.log(decodedResult);
-                        });
-                        break;
-                    case 'myalgo':
-                        myAlgoWallet.signTransaction(txn.toByte()).then(data => {
-                            console.log(data);
-                            apiSubmitTransactions(chain, data.blob).then(data => {
-                                console.log(data);
-                            });
-                        });
-                        break;
-                    default:
-                        break;
-                }
-                // myAlgoWallet.signTransaction(txn.toByte()).then(data => {
-                //     console.log(data);
-                //     apiSubmitTransactions(chain, data.blob).then(data => {
-                //         console.log(data);
-                //     });
-                // });
-                // Sign transaction
-                // txns is an array of algosdk.Transaction like below
-                // i.e txns = [txn, ...someotherTxns], but we've only built one transaction in our case
-
-                // const decodedResult = result.map(element => {
-                //     return element ? new Uint8Array(Buffer.from(element, 'base64')) : null;
-                // });
-                // const flatTxns = txn .reduce((acc, val) => acc.concat(val), []);
-                // const walletTxns = flatTxns.map(({ txn, signers, authAddr, message }) => ({
-                //     txn: Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString('base64'),
-                //     signers, // TODO: put auth addr in signers array
-                //     authAddr,
-                //     message,
-                // }));
-                // // sign transaction
-                // const requestParams = [walletTxns];
-                // const request = formatJsonRpcRequest('algo_signTxn', requestParams);
-                // let sendRequest = connector.sendCustomRequest(request);
-                // sendRequest
-                //     .then(result => {
-                //         console.log(result);
-                //     })
-                //     .catch(error => {});
-            });
-        } catch (error) {}
     };
     const connectToMyAlgo = async () => {
         try {
@@ -191,13 +189,6 @@ function App() {
             console.error(err);
         }
     };
-
-    // useEffect(() => {
-    //     connectToMyAlgo().then(data => {
-    //         console.log(data);
-    //     });
-    //     return () => {};
-    // }, []);
 
     useEffect(() => {
         if (address) {
@@ -211,8 +202,59 @@ function App() {
         return () => {};
     }, [address]);
 
+    useEffect(() => {
+        if (address !== null && walletType === 'walletconnect') {
+            // walletConnectInit();
+        }
+        return () => {};
+    }, [address, walletType]);
+
+    const updateBalance = () => {
+        if (address) {
+            setOpenModal(false);
+            apiGetAccountAssets(chain, address).then(data => {
+                setbalance(
+                    (Number(data[0].amount) / Math.pow(10, data[0].decimals)).toLocaleString(),
+                );
+            });
+        }
+    };
+
     return (
         <div>
+            <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                open={snackbarProp.open}
+                autoHideDuration={2000}
+                onClose={() => {
+                    setsnackbarProp({
+                        ...snackbarProp,
+                        open: false,
+                    });
+                }}
+            >
+                <SnackbarContent
+                    message={snackbarProp.message}
+                    style={{ background: 'white', color: 'black' }}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                aria-label='close'
+                                color='inherit'
+                                sx={{ p: 0.5 }}
+                                onClick={() => {
+                                    setsnackbarProp({
+                                        ...snackbarProp,
+                                        open: false,
+                                    });
+                                }}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </Fragment>
+                    }
+                ></SnackbarContent>
+            </Snackbar>
             <header>
                 <nav>
                     <div className='logo'>
@@ -257,18 +299,20 @@ function App() {
                                         >
                                             {balance} Algo
                                         </p>
-                                        <a
-                                            onClick={() => {
-                                                if (connector) {
-                                                    if (connected) {
-                                                        connector.killSession();
-                                                        setconnected(false);
+                                        {walletType === 'walletconnect' && (
+                                            <a
+                                                onClick={() => {
+                                                    if (connector) {
+                                                        if (connected) {
+                                                            connector.killSession();
+                                                            setconnected(false);
+                                                        }
                                                     }
-                                                }
-                                            }}
-                                        >
-                                            Disconnect
-                                        </a>
+                                                }}
+                                            >
+                                                Disconnect
+                                            </a>
+                                        )}
                                     </>
                                 )}
                                 {!address && (
