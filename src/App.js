@@ -35,6 +35,7 @@ const footerIcon = {
 };
 const chain = 'testnet';
 function App() {
+    const [walletType, setwalletType] = useState(null);
     const [openModal, setOpenModal] = useState(false);
     const [openMenu, setopenMenu] = useState(false);
     const [connected, setconnected] = useState(false);
@@ -53,6 +54,7 @@ function App() {
         setconnected(connector.connected);
         if (connector.connected) {
             setaddress(connector.accounts[0]);
+            setwalletType('walletconnect');
             apiGetAccountAssets(chain, connector.accounts[0]).then(data => {
                 setbalance(
                     (Number(data[0].amount) / Math.pow(10, data[0].decimals)).toLocaleString(),
@@ -108,12 +110,59 @@ function App() {
             const txnsToSign = scenario(chain, address);
             txnsToSign.then(txn => {
                 console.log(txn);
-                myAlgoWallet.signTransaction(txn.toByte()).then(data => {
-                    console.log(data);
-                    apiSubmitTransactions(chain,data.blob).then(data=>{
-                        console.log(data);
-                    })
-                });
+                switch (walletType) {
+                    case 'walletconnect':
+                        const txns = [txn];
+                        const txnsToSign = txns.map(txn => {
+                            const encodedTxn = Buffer.from(
+                                algosdk.encodeUnsignedTransaction(txn),
+                            ).toString('base64');
+
+                            return {
+                                txn: encodedTxn,
+                                message: 'Description of transaction being signed',
+                            };
+                        });
+
+                        const requestParams = [txnsToSign];
+
+                        const request = formatJsonRpcRequest('algo_signTxn', requestParams);
+                        const result = connector.sendCustomRequest(request).then(data => {
+                            const decodedResult = data.map(element => {
+                                return element
+                                    ? new Uint8Array(Buffer.from(element, 'base64'))
+                                    : null;
+                            });
+                            apiSubmitTransactions(chain, decodedResult).then(data => {
+                                console.log(data);
+                            });
+                            console.log(decodedResult);
+                        });
+                        break;
+                    case 'myalgo':
+                        myAlgoWallet.signTransaction(txn.toByte()).then(data => {
+                            console.log(data);
+                            apiSubmitTransactions(chain, data.blob).then(data => {
+                                console.log(data);
+                            });
+                        });
+                        break;
+                    default:
+                        break;
+                }
+                // myAlgoWallet.signTransaction(txn.toByte()).then(data => {
+                //     console.log(data);
+                //     apiSubmitTransactions(chain, data.blob).then(data => {
+                //         console.log(data);
+                //     });
+                // });
+                // Sign transaction
+                // txns is an array of algosdk.Transaction like below
+                // i.e txns = [txn, ...someotherTxns], but we've only built one transaction in our case
+
+                // const decodedResult = result.map(element => {
+                //     return element ? new Uint8Array(Buffer.from(element, 'base64')) : null;
+                // });
                 // const flatTxns = txn .reduce((acc, val) => acc.concat(val), []);
                 // const walletTxns = flatTxns.map(({ txn, signers, authAddr, message }) => ({
                 //     txn: Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString('base64'),
@@ -236,8 +285,9 @@ function App() {
 
                             {openModal && (
                                 <Modal
-                                    onConnect={address => {
+                                    onConnect={(address, type) => {
                                         setaddress(address);
+                                        setwalletType(type);
                                     }}
                                     closeModal={setOpenModal}
                                 />

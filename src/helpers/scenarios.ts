@@ -1,5 +1,6 @@
 import algosdk from 'algosdk';
 import { apiGetTxnParams, ChainType } from './api';
+import connector from './WalletConnect';
 
 const testAccounts = [
     algosdk.mnemonicToSecretKey(
@@ -44,7 +45,7 @@ export enum AssetTransactionType {
 
 const singlePayTxn: Scenario = async (chain: ChainType, address: string): Promise<any> => {
     const suggestedParams = await apiGetTxnParams(chain);
-
+    // connector.sendCustomRequest()
     const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: address,
         to: 'MOZD34O4RMMWJOPGD4VPE2SGH73USXIP7AZORZUQQSGL3THBBJHFTO6LSM',
@@ -61,7 +62,7 @@ const singlePayTxn: Scenario = async (chain: ChainType, address: string): Promis
 
 export const scenarios: Array<{ name: string; scenario: Scenario }> = [
     {
-        name: 'Sign single pay txn',
+        name: 'Pay',
         scenario: singlePayTxn,
     },
 ];

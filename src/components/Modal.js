@@ -37,7 +37,7 @@ function Modal({ closeModal, onConnect }) {
         setconnector(connector);
         setconnected(connector.connected);
         if (connector.connected) {
-            onConnect(connector);
+            onConnect(connector.accounts[0], 'walletconnect');
             setaddress(connector.accounts[0]);
             apiGetAccountAssets(chain, connector.accounts[0]).then(data => {
                 setbalance(
@@ -181,8 +181,7 @@ function Modal({ closeModal, onConnect }) {
                                         .connect()
                                         .then(data => {
                                             const address = data[0].address;
-                                            console.log(address);
-                                            onConnect(address);
+                                            onConnect(address, 'myalgo');
                                         })
                                         .catch(err => {
                                             console.log(err);
