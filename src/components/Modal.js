@@ -13,6 +13,8 @@ import { formatJsonRpcRequest } from '@json-rpc-tools/utils';
 import { apiGetAccountAssets, clientForChain } from '../helpers/api';
 import { scenarios, signTxnWithTestAccount } from '../helpers/scenarios';
 
+import MyAlgoConnect from '@randlabs/myalgo-connect';
+
 const modalIcon = {
     width: '120px',
     height: '25px',
@@ -21,6 +23,7 @@ const modalIcon = {
 const chain = 'testnet';
 
 function Modal({ closeModal, onConnect }) {
+    const myAlgoWallet = new MyAlgoConnect();
     const [connected, setconnected] = useState(false);
     const [connector, setconnector] = useState(null);
     const [address, setaddress] = useState(null);
@@ -169,6 +172,24 @@ function Modal({ closeModal, onConnect }) {
                                 }}
                             >
                                 Use WalletConnect
+                            </button>
+                            <br />
+                            <button
+                                className='con-btn'
+                                onClick={() => {
+                                    myAlgoWallet
+                                        .connect()
+                                        .then(data => {
+                                            const address = data[0].address;
+                                            console.log(address);
+                                            onConnect(address);
+                                        })
+                                        .catch(err => {
+                                            console.log(err);
+                                        });
+                                }}
+                            >
+                                Use MyAlgo
                             </button>
                             <br />
                         </div>

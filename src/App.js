@@ -22,18 +22,18 @@ import './App.css';
 import './index.css';
 import WalletConnect from '@walletconnect/client';
 import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
-import { apiGetAccountAssets } from './helpers/api';
+import { apiGetAccountAssets, apiSubmitTransactions } from './helpers/api';
 import algosdk from 'algosdk';
 import { formatJsonRpcRequest } from '@json-rpc-tools/utils';
 import { scenarios, signTxnWithTestAccount } from './helpers/scenarios';
-
+import MyAlgoConnect from '@randlabs/myalgo-connect';
+// import SendRawTransaction from 'algosdk/dist/types/src/client/v2/algod/sendRawTransaction';
 const footerIcon = {
     width: '30px',
     height: '30px',
     marginRight: '20px',
 };
 const chain = 'testnet';
-
 function App() {
     const [openModal, setOpenModal] = useState(false);
     const [openMenu, setopenMenu] = useState(false);
@@ -43,6 +43,8 @@ function App() {
     const [balance, setbalance] = useState(null);
     const [pendingRequest, setpendingRequest] = useState(false);
     const [result, setresult] = useState(null);
+
+    const myAlgoWallet = new MyAlgoConnect();
 
     const walletConnectInit = () => {
         const bridge = 'https://bridge.walletconnect.org';
@@ -104,27 +106,61 @@ function App() {
         }
         try {
             const txnsToSign = scenario(chain, address);
-            txnsToSign.then(data => {
-                console.log(data);
-                const flatTxns = data.reduce((acc, val) => acc.concat(val), []);
-                const walletTxns = flatTxns.map(({ txn, signers, authAddr, message }) => ({
-                    txn: Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString('base64'),
-                    signers, // TODO: put auth addr in signers array
-                    authAddr,
-                    message,
-                }));
-                // sign transaction
-                const requestParams = [walletTxns];
-                const request = formatJsonRpcRequest('algo_signTxn', requestParams);
-                let sendRequest = connector.sendCustomRequest(request);
-                sendRequest
-                    .then(result => {
-                        console.log(result);
+            txnsToSign.then(txn => {
+                console.log(txn);
+                myAlgoWallet.signTransaction(txn.toByte()).then(data => {
+                    console.log(data);
+                    apiSubmitTransactions(chain,data.blob).then(data=>{
+                        console.log(data);
                     })
-                    .catch(error => {});
+                });
+                // const flatTxns = txn .reduce((acc, val) => acc.concat(val), []);
+                // const walletTxns = flatTxns.map(({ txn, signers, authAddr, message }) => ({
+                //     txn: Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString('base64'),
+                //     signers, // TODO: put auth addr in signers array
+                //     authAddr,
+                //     message,
+                // }));
+                // // sign transaction
+                // const requestParams = [walletTxns];
+                // const request = formatJsonRpcRequest('algo_signTxn', requestParams);
+                // let sendRequest = connector.sendCustomRequest(request);
+                // sendRequest
+                //     .then(result => {
+                //         console.log(result);
+                //     })
+                //     .catch(error => {});
             });
         } catch (error) {}
     };
+    const connectToMyAlgo = async () => {
+        try {
+            const accounts = await myAlgoWallet.connect();
+            const addresses = accounts.map(account => account.address);
+            console.log(addresses);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    // useEffect(() => {
+    //     connectToMyAlgo().then(data => {
+    //         console.log(data);
+    //     });
+    //     return () => {};
+    // }, []);
+
+    useEffect(() => {
+        if (address) {
+            setOpenModal(false);
+            apiGetAccountAssets(chain, address).then(data => {
+                setbalance(
+                    (Number(data[0].amount) / Math.pow(10, data[0].decimals)).toLocaleString(),
+                );
+            });
+        }
+        return () => {};
+    }, [address]);
 
     return (
         <div>
@@ -152,7 +188,7 @@ function App() {
                                 </a>
                             </li>
                             <li>
-                                {connected && (
+                                {address && (
                                     <>
                                         <p
                                             style={{
@@ -186,7 +222,7 @@ function App() {
                                         </a>
                                     </>
                                 )}
-                                {!connected && (
+                                {!address && (
                                     <button
                                         className='sec_btn'
                                         onClick={() => {
@@ -201,7 +237,7 @@ function App() {
                             {openModal && (
                                 <Modal
                                     onConnect={address => {
-                                        setconnected(!connected);
+                                        setaddress(address);
                                     }}
                                     closeModal={setOpenModal}
                                 />
