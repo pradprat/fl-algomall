@@ -5,6 +5,8 @@ import walletconimg from './WalletConnect.svg';
 import algosignimg from './algosigner.png';
 import { WalletConnectConnector, URI_AVAILABLE } from '@web3-react/walletconnect-connector';
 import walletConnect from '../helpers/WalletConnect';
+import algorandwalllet_icon from './algorandwalllet.png';
+import myalgowallet_icon from './myalgowallet.png';
 import QRCodeModal from 'algorand-walletconnect-qrcode-modal';
 import WalletConnect from '@walletconnect/client';
 import algosdk from 'algosdk';
@@ -16,8 +18,8 @@ import { scenarios, signTxnWithTestAccount } from '../helpers/scenarios';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 
 const modalIcon = {
-    width: '120px',
-    height: '25px',
+    width: 60,
+    // height: '25px',
 };
 
 const chain = 'testnet';
@@ -158,7 +160,11 @@ function Modal({ closeModal, onConnect }) {
                             <p className='modalparagraph'>
                                 Choose your preferred wallet authentication method.
                             </p>
-                            <img src={walletconimg} alt='walletconnect_icon' style={modalIcon} />
+                            <img
+                                src={algorandwalllet_icon}
+                                alt='algorandwalllet_icon'
+                                style={modalIcon}
+                            />
                             <br />
                             <button
                                 className='con-btn'
@@ -171,8 +177,14 @@ function Modal({ closeModal, onConnect }) {
                                     }
                                 }}
                             >
-                                Use WalletConnect
+                                Use Algorand Wallet
                             </button>
+                            <br />
+                            <img
+                                src={myalgowallet_icon}
+                                alt='myalgowallet_icon'
+                                style={modalIcon}
+                            />
                             <br />
                             <button
                                 className='con-btn'

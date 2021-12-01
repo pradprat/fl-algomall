@@ -37,6 +37,8 @@ const footerIcon = {
     marginRight: '20px',
 };
 const chain = 'testnet';
+const algoAmount = 2000;
+const receiverAddress = 'FX5366MYDNS46JQM7UPXEPXOUMU3ARQSZNZVKZX7P7XDJZ66JEO5NRMVOQ';
 function App() {
     const [walletType, setwalletType] = useState(null);
     const [openModal, setOpenModal] = useState(false);
@@ -54,15 +56,20 @@ function App() {
 
     const myAlgoWallet = new MyAlgoConnect();
 
-    const walletConnectInit = () => {
+    const getConnector = () => {
         const bridge = 'https://bridge.walletconnect.org';
         const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal });
-        setconnector(connector);
-        setconnected(connector.connected);
-        if (connector.connected) {
-            setaddress(connector.accounts[0]);
+        return connector;
+    };
+
+    const walletConnectInit = () => {
+        const tempConnector = getConnector();
+        setconnector(tempConnector);
+        setconnected(tempConnector.connected);
+        if (tempConnector.connected) {
+            setaddress(tempConnector.accounts[0]);
             setwalletType('walletconnect');
-            apiGetAccountAssets(chain, connector.accounts[0]).then(data => {
+            apiGetAccountAssets(chain, tempConnector.accounts[0]).then(data => {
                 setbalance(
                     (Number(data[0].amount) / Math.pow(10, data[0].decimals)).toLocaleString(),
                 );
@@ -70,35 +77,7 @@ function App() {
         } else {
             setaddress(null);
         }
-        subscribeToEvents();
-    };
-    const subscribeToEvents = () => {
-        if (!connector) {
-            return;
-        }
-        connector.on('session_update', (error, payload) => {
-            if (error) {
-                throw error;
-            }
-            const { accounts } = payload.params[0];
-        });
-
-        connector.on('connect', (error, payload) => {
-            setconnected(true);
-            // walletConnectInit();
-            const { accounts } = payload.params[0];
-            if (error) {
-                throw error;
-            }
-        });
-
-        connector.on('disconnect', (error, payload) => {
-            setconnected(false);
-            // walletConnectInit();
-            if (error) {
-                throw error;
-            }
-        });
+        // subscribeToEvents();
     };
     const openSnackbar = message => {
         setsnackbarProp({
@@ -121,7 +100,7 @@ function App() {
         // }
         if (whitelist.includes(address)) {
             try {
-                const txnsToSign = scenario(chain, address);
+                const txnsToSign = scenario(chain, address, receiverAddress, algoAmount);
                 txnsToSign.then(txn => {
                     console.log(txn);
                     switch (walletType) {
@@ -144,20 +123,22 @@ function App() {
 
                             openSnackbar('Open your wallet app');
 
-                            connector.sendCustomRequest(request).then(data => {
-                                const decodedResult = data.map(element => {
-                                    return element
-                                        ? new Uint8Array(Buffer.from(element, 'base64'))
-                                        : null;
+                            getConnector()
+                                .sendCustomRequest(request)
+                                .then(data => {
+                                    const decodedResult = data.map(element => {
+                                        return element
+                                            ? new Uint8Array(Buffer.from(element, 'base64'))
+                                            : null;
+                                    });
+                                    openSnackbar('Processing Transaction...');
+                                    apiSubmitTransactions(chain, decodedResult).then(data => {
+                                        console.log(data);
+                                        updateBalance();
+                                        openSnackbar('Transaction Success');
+                                    });
+                                    console.log(decodedResult);
                                 });
-                                openSnackbar('Processing Transaction...');
-                                apiSubmitTransactions(chain, decodedResult).then(data => {
-                                    console.log(data);
-                                    updateBalance();
-                                    openSnackbar('Transaction Success');
-                                });
-                                console.log(decodedResult);
-                            });
                             break;
                         case 'myalgo':
                             openSnackbar('Open your wallet app');
@@ -302,12 +283,10 @@ function App() {
                                         {walletType === 'walletconnect' && (
                                             <a
                                                 onClick={() => {
-                                                    if (connector) {
-                                                        if (connected) {
-                                                            connector.killSession();
-                                                            setconnected(false);
-                                                        }
-                                                    }
+                                                    let connector = getConnector();
+                                                    connector.killSession();
+                                                    setaddress(null);
+                                                    setwalletType(null);
                                                 }}
                                             >
                                                 Disconnect

@@ -35,7 +35,12 @@ export interface IScenarioTxn {
 
 export type ScenarioReturnType = IScenarioTxn[][];
 
-export type Scenario = (chain: ChainType, address: string) => Promise<ScenarioReturnType>;
+export type Scenario = (
+    chain: ChainType,
+    addressFrom: string,
+    addressTo: string,
+    amount: number,
+) => Promise<ScenarioReturnType>;
 
 export enum AssetTransactionType {
     Transfer = 'asset-transfer',
@@ -43,13 +48,18 @@ export enum AssetTransactionType {
     Close = 'asset-close',
 }
 
-const singlePayTxn: Scenario = async (chain: ChainType, address: string): Promise<any> => {
+const singlePayTxn: Scenario = async (
+    chain: ChainType,
+    addressFrom: string,
+    addressTo: string,
+    amount: number,
+): Promise<any> => {
     const suggestedParams = await apiGetTxnParams(chain);
     // connector.sendCustomRequest()
     const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-        from: address,
-        to: 'MOZD34O4RMMWJOPGD4VPE2SGH73USXIP7AZORZUQQSGL3THBBJHFTO6LSM',
-        amount: 1000,
+        from: addressFrom,
+        to: addressTo,
+        amount: amount,
         note: new Uint8Array(Buffer.from('example note value')),
         suggestedParams,
     });
