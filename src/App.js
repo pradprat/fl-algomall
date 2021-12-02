@@ -29,7 +29,7 @@ import { formatJsonRpcRequest } from '@json-rpc-tools/utils';
 import { scenarios, signTxnWithTestAccount } from './helpers/scenarios';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 import whitelist from './assets/whitelist.json';
-import { IconButton, Snackbar, SnackbarContent } from '@mui/material';
+import { IconButton, Snackbar, SnackbarContent, TextField } from '@mui/material';
 // import SendRawTransaction from 'algosdk/dist/types/src/client/v2/algod/sendRawTransaction';
 const footerIcon = {
     width: '30px',
@@ -37,8 +37,10 @@ const footerIcon = {
     marginRight: '20px',
 };
 const chain = 'testnet';
-const algoAmount = 2000;
+// const algoAmount = 2000;
 const receiverAddress = 'FX5366MYDNS46JQM7UPXEPXOUMU3ARQSZNZVKZX7P7XDJZ66JEO5NRMVOQ';
+const maxAlgo = 1000;
+const minAlgo = 100;
 function App() {
     const [walletType, setwalletType] = useState(null);
     const [openModal, setOpenModal] = useState(false);
@@ -53,8 +55,23 @@ function App() {
         open: false,
         message: '',
     });
+    const [algoAmount, setalgoAmount] = useState(minAlgo);
+    const [amountError, setamountError] = useState(false);
 
     const myAlgoWallet = new MyAlgoConnect();
+
+    useEffect(() => {
+        if (algoAmount) {
+            if (algoAmount >= minAlgo && algoAmount <= maxAlgo) {
+                setamountError(false);
+            } else {
+                setamountError(true);
+            }
+        } else {
+            setamountError(false);
+        }
+        return () => {};
+    }, [algoAmount]);
 
     const getConnector = () => {
         const bridge = 'https://bridge.walletconnect.org';
@@ -100,7 +117,7 @@ function App() {
         // }
         if (whitelist.includes(address)) {
             try {
-                const txnsToSign = scenario(chain, address, receiverAddress, algoAmount);
+                const txnsToSign = scenario(chain, address, receiverAddress, Number(algoAmount));
                 txnsToSign.then(txn => {
                     console.log(txn);
                     switch (walletType) {
@@ -138,19 +155,27 @@ function App() {
                                         openSnackbar('Transaction Success');
                                     });
                                     console.log(decodedResult);
+                                })
+                                .catch(err => {
+                                    openSnackbar('You cancel the transaction');
                                 });
                             break;
                         case 'myalgo':
                             openSnackbar('Open your wallet app');
-                            myAlgoWallet.signTransaction(txn.toByte()).then(data => {
-                                console.log(data);
-                                openSnackbar('Processing Transaction...');
-                                apiSubmitTransactions(chain, data.blob).then(data => {
+                            myAlgoWallet
+                                .signTransaction(txn.toByte())
+                                .then(data => {
                                     console.log(data);
-                                    updateBalance();
-                                    openSnackbar('Transaction Success');
+                                    openSnackbar('Processing Transaction...');
+                                    apiSubmitTransactions(chain, data.blob).then(data => {
+                                        console.log(data);
+                                        updateBalance();
+                                        openSnackbar('Transaction Success');
+                                    });
+                                })
+                                .catch(err => {
+                                    openSnackbar('You cancel the transaction');
                                 });
-                            });
                             break;
                         default:
                             break;
@@ -350,14 +375,37 @@ function App() {
                         {address &&
                             scenarios.map(({ name, scenario }) => {
                                 return (
-                                    <button
-                                        className='btn'
-                                        onClick={() => {
-                                            signTxnScenario(scenario);
-                                        }}
-                                    >
-                                        {name}
-                                    </button>
+                                    <>
+                                        <TextField
+                                            id='Amount-basic'
+                                            label='Amount'
+                                            variant='outlined'
+                                            style={{
+                                                marginRight: 8,
+                                                width: 200,
+                                                background: 'white',
+                                            }}
+                                            type='number'
+                                            error={amountError}
+                                            helperText={
+                                                amountError ? 'min 100 ALGO max 1000 ALGO' : ''
+                                            }
+                                            onChange={event => {
+                                                setalgoAmount(Number(event.target.value));
+                                            }}
+                                            value={algoAmount}
+                                        />
+                                        <button
+                                            className='btn'
+                                            onClick={() => {
+                                                if (!amountError) {
+                                                    signTxnScenario(scenario);
+                                                }
+                                            }}
+                                        >
+                                            {name}
+                                        </button>
+                                    </>
                                 );
                             })}
                     </div>
